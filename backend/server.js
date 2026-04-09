@@ -5,10 +5,8 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ Allowed origins from env
 const allowedOrigins = process.env.CLIENT_URL.split(",");
 
-// ✅ CORS middleware
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
