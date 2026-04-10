@@ -14,9 +14,10 @@ function App() {
   const fetchTasks = async () => {
     try {
       const res = await axios.get(API);
-      setTasks(res.data);
+      setTasks(res.data || []); // simple fix
     } catch (err) {
       console.log("Error fetching tasks");
+      setTasks([]); // fallback
     }
   };
 
@@ -44,7 +45,7 @@ function App() {
     }
   };
 
-  // TOGGLE
+  // TOGGLE TASK
   const toggleTask = async (id) => {
     try {
       await axios.patch(`${API}/${id}`);
@@ -63,10 +64,11 @@ function App() {
       }
 
       const res = await axios.get(`${API}/search/${search}`);
-      setTasks(res.data);
+      setTasks(res.data || []); // simple fix
 
     } catch (err) {
       console.log("Search error");
+      setTasks([]);
     }
   };
 
