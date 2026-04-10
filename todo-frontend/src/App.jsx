@@ -8,34 +8,38 @@ const API = import.meta.env.VITE_API_URL;
 
 function App() {
   const [tasks, setTasks] = useState([]);
-const [search, setSearch] = useState("");
-const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // GET TASKS
-const fetchTasks = async () => {
-  try {
+  const fetchTasks = async () => {
     setLoading(true);
-    const res = await axios.get(API);
-    setTasks(res.data.data || []);
-
-  } catch (err) {
-    console.log("Error fetching tasks");
-    setTasks([]);
-  } finally {
+    try {
+      const res = await axios.get(API);
+      setTasks(res.data.data || []);
+    } catch (err) {
+      alert("Failed to load tasks");
+      setTasks([]);
+    }
     setLoading(false);
-  }
-};
+  };
+
   useEffect(() => {
     fetchTasks();
   }, []);
 
   // ADD TASK
   const addTask = async (title) => {
+    if (!title.trim()) {
+      alert("Please enter a task");
+      return;
+    }
+
     try {
       await axios.post(API, { title });
       fetchTasks();
     } catch (err) {
-      console.log("Error adding task");
+      alert("Could not add task");
     }
   };
 
@@ -45,7 +49,7 @@ const fetchTasks = async () => {
       await axios.delete(`${API}/${id}`);
       fetchTasks();
     } catch (err) {
-      console.log("Error deleting task");
+      alert("Delete failed");
     }
   };
 
@@ -55,23 +59,22 @@ const fetchTasks = async () => {
       await axios.patch(`${API}/${id}`);
       fetchTasks();
     } catch (err) {
-      console.log("Error updating task");
+      alert("Update failed");
     }
   };
 
-  // SEARCH
+  // SEARCH TASK
   const searchTask = async () => {
+    if (search.trim() === "") {
+      fetchTasks();
+      return;
+    }
+
     try {
-      if (search === "") {
-        fetchTasks();
-        return;
-      }
-
       const res = await axios.get(`${API}/search/${search}`);
-      setTasks(res.data || []); // simple fix
-
+      setTasks(res.data.data || []);
     } catch (err) {
-      console.log("Search error");
+      alert("Search failed");
       setTasks([]);
     }
   };
@@ -90,11 +93,17 @@ const fetchTasks = async () => {
       />
       <button onClick={searchTask}>Search</button>
 
-      <TaskList
-        tasks={tasks}
-        deleteTask={deleteTask}
-        toggleTask={toggleTask}
-      />
+      {loading && <p>Loading...</p>}
+
+      {!loading && tasks.length === 0 && <p>No tasks found</p>}
+
+      {!loading && tasks.length > 0 && (
+        <TaskList
+          tasks={tasks}
+          deleteTask={deleteTask}
+          toggleTask={toggleTask}
+        />
+      )}
     </div>
   );
 }
