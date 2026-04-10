@@ -12,14 +12,22 @@ function App() {
 
   // GET TASKS
   const fetchTasks = async () => {
-    try {
-      const res = await axios.get(API);
-      setTasks(res.data || []); // simple fix
-    } catch (err) {
-      console.log("Error fetching tasks");
-      setTasks([]); // fallback
-    }
-  };
+  try {
+    setLoading(true);
+
+    const res = await axios.get(API, {
+      timeout: 10000
+    });
+
+    setTasks(Array.isArray(res.data) ? res.data : []);
+  } catch (err) {
+    console.log(err);
+    alert("Error fetching tasks");
+    setTasks([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchTasks();
