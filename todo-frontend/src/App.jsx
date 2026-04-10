@@ -8,7 +8,8 @@ const API = import.meta.env.VITE_API_URL;
 
 function App() {
   const [tasks, setTasks] = useState([]);
-  const [search, setSearch] = useState("");
+const [search, setSearch] = useState("");
+const [loading, setLoading] = useState(false);
 
   // GET TASKS
   const fetchTasks = async () => {
