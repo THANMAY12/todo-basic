@@ -3,34 +3,20 @@ import axios from "axios";
 import "./App.css";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
+
 const API = import.meta.env.VITE_API_URL;
+
 function App() {
   const [tasks, setTasks] = useState([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  //FETCH TASKS
+  // GET TASKS
   const fetchTasks = async () => {
-    setLoading(true);
-
     try {
-      const response = await axios.get(API);
-
-      if (response.data.success) {
-        setTasks(response.data.data);
-      } else {
-        setTasks([]);
-      }
-
-    } catch (error) {
-      if (error.response) {
-        alert("Failed to load tasks: " + error.response.data.message);
-      } else {
-        alert("Network error while fetching tasks");
-      }
-      setTasks([]);
-    } finally {
-      setLoading(false);
+      const res = await axios.get(API);
+      setTasks(res.data);
+    } catch (err) {
+      console.log("Error fetching tasks");
     }
   };
 
@@ -38,135 +24,71 @@ function App() {
     fetchTasks();
   }, []);
 
-  //ADD TASK
+  // ADD TASK
   const addTask = async (title) => {
-    if (!title || title.trim() === "") {
-      alert("Please enter a valid task");
-      return;
-    }
-
     try {
-      const response = await axios.post(API, { title });
-
-      if (response.data.success) {
-        fetchTasks();
-      } else {
-        alert(response.data.message);
-      }
-
-    } catch (error) {
-      if (error.response) {
-        alert("Create failed: " + error.response.data.message);
-      } else {
-        alert("Network error while adding task");
-      }
+      await axios.post(API, { title });
+      fetchTasks();
+    } catch (err) {
+      console.log("Error adding task");
     }
   };
 
-  //DELETE TASK
+  // DELETE TASK
   const deleteTask = async (id) => {
     try {
-      const response = await axios.delete(`${API}/${id}`);
-
-      if (response.data.success) {
-        fetchTasks();
-      } else {
-        alert(response.data.message);
-      }
-
-    } catch (error) {
-      if (error.response) {
-        alert("Delete failed: " + error.response.data.message);
-      } else {
-        alert("Network error while deleting task");
-      }
+      await axios.delete(`${API}/${id}`);
+      fetchTasks();
+    } catch (err) {
+      console.log("Error deleting task");
     }
   };
 
-  //TOGGLE TASK STATUS
+  // TOGGLE
   const toggleTask = async (id) => {
     try {
-      const response = await axios.patch(`${API}/${id}`);
-
-      if (response.data.success) {
-        fetchTasks();
-      }
-
-    } catch (error) {
-      if (error.response) {
-        alert("Update failed: " + error.response.data.message);
-      } else {
-        alert("Network error while updating task");
-      }
+      await axios.patch(`${API}/${id}`);
+      fetchTasks();
+    } catch (err) {
+      console.log("Error updating task");
     }
   };
 
-  //SEARCH TASK
+  // SEARCH
   const searchTask = async () => {
-    if (search.trim() === "") {
-      fetchTasks();
-      return;
-    }
-
     try {
-      const response = await axios.get(`${API}/search/${search}`);
-
-      if (response.data.success) {
-        setTasks(response.data.data);
-      } else {
-        setTasks([]);
+      if (search === "") {
+        fetchTasks();
+        return;
       }
 
-    } catch (error) {
-      if (error.response) {
-        alert("Search failed: " + error.response.data.message);
-      } else {
-        alert("Network error while searching");
-      }
-      setTasks([]);
+      const res = await axios.get(`${API}/search/${search}`);
+      setTasks(res.data);
+
+    } catch (err) {
+      console.log("Search error");
     }
   };
-  useEffect(() => {
-    if (search === "") {
-      fetchTasks();
-    }
-  }, [search]);
 
   return (
     <div className="app">
-      <h1>To-Do App 📝</h1>
+      <h1>To-Do App</h1>
 
-      {/* ADD TASK */}
       <TaskForm addTask={addTask} />
 
-      {/* SEARCH */}
-      <div className="search-box">
-        <input
-          type="text"
-          placeholder="Search tasks..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") searchTask();
-          }}
-        />
-        <button onClick={searchTask}>Search</button>
-      </div>
+      <input
+        type="text"
+        placeholder="Search..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <button onClick={searchTask}>Search</button>
 
-      {/* LOADING */}
-      {loading && <p>Loading tasks...</p>}
-
-      {/* EMPTY STATE */}
-      {!loading && tasks.length === 0 && <p>No tasks found</p>}
-
-      {/* TASK LIST */}
-      {!loading && tasks.length > 0 && (
-        <TaskList
-          tasks={tasks}
-          deleteTask={deleteTask}
-          toggleTask={toggleTask}
-        />
-      )}
+      <TaskList
+        tasks={tasks}
+        deleteTask={deleteTask}
+        toggleTask={toggleTask}
+      />
     </div>
   );
 }
