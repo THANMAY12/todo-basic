@@ -12,24 +12,19 @@ const [search, setSearch] = useState("");
 const [loading, setLoading] = useState(false);
 
   // GET TASKS
-  const fetchTasks = async () => {
+const fetchTasks = async () => {
   try {
     setLoading(true);
+    const res = await axios.get(API);
+    setTasks(res.data.data || []);
 
-    const res = await axios.get(API, {
-      timeout: 10000
-    });
-
-    setTasks(Array.isArray(res.data) ? res.data : []);
   } catch (err) {
-    console.log(err);
-    alert("Error fetching tasks");
+    console.log("Error fetching tasks");
     setTasks([]);
   } finally {
     setLoading(false);
   }
 };
-
   useEffect(() => {
     fetchTasks();
   }, []);
