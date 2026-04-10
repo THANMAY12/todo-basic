@@ -8,16 +8,17 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+
   //FETCH TASKS
   const fetchTasks = async () => {
     setLoading(true);
 
     try {
       const response = await axios.get(API);
+
       if (response.data.success) {
         setTasks(response.data.data);
       } else {
-        console.log("Unexpected response format");
         setTasks([]);
       }
 
@@ -28,15 +29,14 @@ function App() {
         alert("Network error while fetching tasks");
       }
       setTasks([]);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   useEffect(() => {
     fetchTasks();
   }, []);
-
 
   //ADD TASK
   const addTask = async (title) => {
@@ -63,7 +63,6 @@ function App() {
     }
   };
 
-
   //DELETE TASK
   const deleteTask = async (id) => {
     try {
@@ -76,12 +75,15 @@ function App() {
       }
 
     } catch (error) {
-      alert("Error deleting task");
+      if (error.response) {
+        alert("Delete failed: " + error.response.data.message);
+      } else {
+        alert("Network error while deleting task");
+      }
     }
   };
 
-
-  //TOGGLE STATUS
+  //TOGGLE TASK STATUS
   const toggleTask = async (id) => {
     try {
       const response = await axios.patch(`${API}/${id}`);
@@ -91,12 +93,15 @@ function App() {
       }
 
     } catch (error) {
-      alert("Failed to update task status");
+      if (error.response) {
+        alert("Update failed: " + error.response.data.message);
+      } else {
+        alert("Network error while updating task");
+      }
     }
   };
 
-
-  // SEARCH TASK
+  //SEARCH TASK
   const searchTask = async () => {
     if (search.trim() === "") {
       fetchTasks();
@@ -113,11 +118,19 @@ function App() {
       }
 
     } catch (error) {
-      alert("Search failed");
+      if (error.response) {
+        alert("Search failed: " + error.response.data.message);
+      } else {
+        alert("Network error while searching");
+      }
       setTasks([]);
     }
   };
-
+  useEffect(() => {
+    if (search === "") {
+      fetchTasks();
+    }
+  }, [search]);
 
   return (
     <div className="app">
@@ -143,7 +156,7 @@ function App() {
       {/* LOADING */}
       {loading && <p>Loading tasks...</p>}
 
-      {/* EMPTY */}
+      {/* EMPTY STATE */}
       {!loading && tasks.length === 0 && <p>No tasks found</p>}
 
       {/* TASK LIST */}

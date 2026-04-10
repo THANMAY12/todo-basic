@@ -1,117 +1,117 @@
-# 📝 To-Do List Application (Full Stack)
 
-## 🚀 Overview
-This is a full-stack To-Do List application built using **Node.js, Express.js, MongoDB, and React (Vite)**.  
-The application allows users to manage daily tasks efficiently with features like creating, updating, deleting, searching, and marking tasks as completed.
+# To-Do List Application (Full Stack)
+## Overview
+This project is a simple full-stack To-Do List application built using Node.js, Express, MongoDB, and React. The goal of this project was to understand how a frontend and backend communicate and how data is stored and managed using APIs.
 
-The backend follows a modular structure using **Routes, Controllers, and Models (MVC pattern)** for better organization and maintainability.
+The application allows users to:
+- Add tasks
+- View tasks
+- Delete tasks
+- Mark tasks as completed
+- Search tasks
 
-
-## 🛠️ Tech Stack
-
-### 🔹 Backend
+## Technologies Used
+### Backend
 - Node.js
 - Express.js
 - MongoDB (Mongoose)
-- CORS
-- dotenv
 
-### 🔹 Frontend
+### Frontend
 - React (Vite)
 - Axios
-- CSS
+- Basic CSS
 
 
+## How to Run the Project
+### 1. Clone the repository
 
-## ⚙️ Features
+git clone [https://github.com/THANMAY12/todo-basic.git](https://github.com/THANMAY12/todo-basic.git)
+cd todo-basic
 
-✔ Add new tasks  
-✔ View all tasks  
-✔ Update tasks  
-✔ Delete tasks  
-✔ Mark tasks as complete/incomplete  
-✔ Search tasks  
-✔ Real-time UI updates  
+### 2. Setup Backend
+Go to backend folder:
 
 
-
-## 🚀 How to Run Locally
-
-### 1️⃣ Clone the Repository
-git clone https://github.com/THANMAY12/todo-basic.git
-
-
-### 2️⃣ Run Backend
 cd backend
+
+Install dependencies:
+
 npm install
+Create a `.env` file using the example below.
+
+Example:
+VITE_API_URL=http://localhost:5000/api/tasks
+
+Run the server:
+
 npm run dev
 
+### 3. Setup Frontend
 
----
+Go to frontend folder:
 
-### 3️⃣ Run Frontend
 cd todo-frontend
+Install dependencies:
 npm install
+Run the frontend:
 npm run dev
 
+## Environment Variables
 
----
+Create a `.env` file inside the backend folder.
 
-## 📡 API Endpoints
+Example:
+MONGO_URI=your_mongodb_connection_string
+CLIENT_URL=[http://localhost:5173](http://localhost:5173)
+PORT=5000
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/tasks | Get all tasks |
-| POST | /api/tasks | Create task |
-| PUT | /api/tasks/:id | Update task |
-| DELETE | /api/tasks/:id | Delete task |
-| PATCH | /api/tasks/:id | Toggle status |
-| GET | /api/tasks/search/:text | Search tasks |
+## API Endpoints
 
----
+- GET `/api/tasks` → Get all tasks  
+- POST `/api/tasks` → Create a task  
+- PUT `/api/tasks/:id` → Update a task  
+- DELETE `/api/tasks/:id` → Delete a task  
+- PATCH `/api/tasks/:id` → Toggle task status  
+- GET `/api/tasks/search/:text` → Search tasks  
 
-## 🌐 Deployment Links
 
-- 🔗 Frontend (Netlify): https://startling-sfogliatella-df97c1.netlify.app/  
-- 🔗 Backend (Render): https://todo-basic-eoww.onrender.com/api/tasks  
+## Testing
 
----
+I tested the backend APIs using Postman.
 
-## 🧪 Testing
+All endpoints were tested:
+- Create task
+- Get tasks
+- Update task
+- Delete task
+- Search task
 
-- Tested APIs using **Postman**
-- Verified all CRUD operations
-- Checked frontend-backend integration
-- Ensured real-time UI updates
 
----
 
-## ⚠️ Challenges Faced
+## What I Learned
 
-- Handling CORS issues between frontend and backend  
-- Managing state updates after API calls  
-- Deploying frontend and backend separately  
-- Handling environment variables in production  
+- How to build REST APIs using Express
+- How to connect Node.js with MongoDB using Mongoose
+- How React communicates with backend APIs using Axios
+- How to manage state in React using useState and useEffect
+- How to deploy frontend and backend separately
 
----
 
-## ✅ Solutions
+## Challenges Faced
 
-- Configured CORS properly using allowed origins  
-- Used Axios for API communication  
-- Implemented useState and useEffect for dynamic UI  
-- Used dotenv for environment management  
+- Understanding how CORS works and fixing related errors
+- Connecting frontend and backend after deployment
+- Handling API errors properly
+- Debugging issues where frontend was not receiving correct data
 
----
+## Improvements (Future Work)
 
-## 📦 Submission Details
+- Add authentication (login/signup)
+- Add task deadlines and priority
+- Improve UI design
+- Add edit task feature
 
-- GitHub Repository: https://github.com/THANMAY12/todo-basic 
-- Frontend Deployment: https://startling-sfogliatella-df97c1.netlify.app/  
-- Backend Deployment: https://todo-basic-eoww.onrender.com/api/tasks  
 
----
+## Conclusion
 
-## 🎯 Conclusion
-
-This project demonstrates a complete full-stack implementation of a To-Do List application with proper API design, frontend integration, and deployment.
+This project helped me understand the basics of full-stack development. I now have a better understanding of how frontend and backend work together and how APIs are used in real applications.
