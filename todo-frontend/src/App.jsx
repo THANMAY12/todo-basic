@@ -1,106 +1,132 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
-
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
-
 const API = import.meta.env.VITE_API_URL;
-
 function App() {
-  // state
   const [tasks, setTasks] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // 🔁 GET TASKS
+  //FETCH TASKS
   const fetchTasks = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(API);
+    setLoading(true);
 
-      // make sure it's always array
-      if (Array.isArray(res.data)) {
-        setTasks(res.data);
+    try {
+      const response = await axios.get(API);
+      if (response.data.success) {
+        setTasks(response.data.data);
       } else {
+        console.log("Unexpected response format");
         setTasks([]);
       }
 
-    } catch (err) {
-      alert("Error fetching tasks");
+    } catch (error) {
+      if (error.response) {
+        alert("Failed to load tasks: " + error.response.data.message);
+      } else {
+        alert("Network error while fetching tasks");
+      }
       setTasks([]);
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
-  // run on page load
   useEffect(() => {
     fetchTasks();
   }, []);
 
-  // ➕ ADD TASK
+
+  //ADD TASK
   const addTask = async (title) => {
-    if (!title.trim()) return; // prevent empty input
+    if (!title || title.trim() === "") {
+      alert("Please enter a valid task");
+      return;
+    }
 
     try {
-      await axios.post(API, { title });
-      fetchTasks();
-    } catch (err) {
-      alert("Error adding task");
+      const response = await axios.post(API, { title });
+
+      if (response.data.success) {
+        fetchTasks();
+      } else {
+        alert(response.data.message);
+      }
+
+    } catch (error) {
+      if (error.response) {
+        alert("Create failed: " + error.response.data.message);
+      } else {
+        alert("Network error while adding task");
+      }
     }
   };
 
-  // ❌ DELETE TASK
+
+  //DELETE TASK
   const deleteTask = async (id) => {
     try {
-      await axios.delete(`${API}/${id}`);
-      fetchTasks();
-    } catch (err) {
+      const response = await axios.delete(`${API}/${id}`);
+
+      if (response.data.success) {
+        fetchTasks();
+      } else {
+        alert(response.data.message);
+      }
+
+    } catch (error) {
       alert("Error deleting task");
     }
   };
 
-  // ✔️ TOGGLE COMPLETE
+
+  //TOGGLE STATUS
   const toggleTask = async (id) => {
     try {
-      await axios.patch(`${API}/${id}`);
-      fetchTasks();
-    } catch (err) {
-      alert("Error updating task");
+      const response = await axios.patch(`${API}/${id}`);
+
+      if (response.data.success) {
+        fetchTasks();
+      }
+
+    } catch (error) {
+      alert("Failed to update task status");
     }
   };
 
-  // 🔍 SEARCH TASK
+
+  // SEARCH TASK
   const searchTask = async () => {
+    if (search.trim() === "") {
+      fetchTasks();
+      return;
+    }
+
     try {
-      if (search === "") {
-        fetchTasks();
-        return;
-      }
+      const response = await axios.get(`${API}/search/${search}`);
 
-      const res = await axios.get(`${API}/search/${search}`);
-
-      if (Array.isArray(res.data)) {
-        setTasks(res.data);
+      if (response.data.success) {
+        setTasks(response.data.data);
       } else {
         setTasks([]);
       }
 
-    } catch (err) {
-      alert("Error searching tasks");
+    } catch (error) {
+      alert("Search failed");
       setTasks([]);
     }
   };
+
 
   return (
     <div className="app">
       <h1>To-Do App 📝</h1>
 
-      {/* add task */}
+      {/* ADD TASK */}
       <TaskForm addTask={addTask} />
 
-      {/* search */}
+      {/* SEARCH */}
       <div className="search-box">
         <input
           type="text"
@@ -114,14 +140,14 @@ function App() {
         <button onClick={searchTask}>Search</button>
       </div>
 
-      {/* loading */}
-      {loading && <p>Loading...</p>}
+      {/* LOADING */}
+      {loading && <p>Loading tasks...</p>}
 
-      {/* empty state */}
+      {/* EMPTY */}
       {!loading && tasks.length === 0 && <p>No tasks found</p>}
 
-      {/* task list */}
-      {!loading && (
+      {/* TASK LIST */}
+      {!loading && tasks.length > 0 && (
         <TaskList
           tasks={tasks}
           deleteTask={deleteTask}
